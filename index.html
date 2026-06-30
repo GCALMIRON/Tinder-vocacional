@@ -2,34 +2,36 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Match Vocacional</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body {
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
+    color: #333;
+  }
+  body {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #333;
-    overflow: hidden;
   }
   .app {
     width: 100%;
-    max-width: 420px;
-    height: 100vh;
-    max-height: 800px;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
     background: #fff;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
   }
   .screen {
     position: absolute;
     inset: 0;
-    padding: 24px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     transition: transform 0.4s ease, opacity 0.4s ease;
@@ -43,16 +45,17 @@
     text-align: center;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
+    padding: 20px;
   }
-  .start h1 { font-size: 2.2rem; margin-bottom: 12px; font-weight: 800; }
-  .start p { font-size: 1rem; margin-bottom: 32px; opacity: 0.95; line-height: 1.5; padding: 0 12px; }
-  .start .emoji-big { font-size: 4rem; margin-bottom: 20px; }
+  .start h1 { font-size: clamp(1.8rem, 6vw, 2.5rem); margin-bottom: 12px; font-weight: 800; }
+  .start p { font-size: clamp(0.9rem, 3vw, 1.1rem); margin-bottom: 32px; opacity: 0.95; line-height: 1.5; padding: 0 12px; }
+  .start .emoji-big { font-size: clamp(3rem, 10vw, 4rem); margin-bottom: 20px; }
   .btn-start {
     background: white;
     color: #764ba2;
     border: none;
     padding: 16px 48px;
-    font-size: 1.1rem;
+    font-size: clamp(1rem, 3.5vw, 1.2rem);
     font-weight: 700;
     border-radius: 50px;
     cursor: pointer;
@@ -62,16 +65,18 @@
   .btn-start:active { transform: scale(0.95); }
   
   .logo-doe {
-  margin-top: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.logo-img {
-  max-width: 220px;
-  height: auto;
-  opacity: 0.95;
-}
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
+  }
+  .logo-img {
+    max-width: 80%;
+    max-height: 80px;
+    height: auto;
+    opacity: 0.95;
+  }
 
   .game { background: #f5f5f7; padding: 12px; }
   .progress {
@@ -100,13 +105,14 @@
   .card {
     flex: 1;
     background: white;
-    border-radius: 24px;
+    border-radius: 20px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     transition: transform 0.3s ease, opacity 0.3s ease;
     margin-bottom: 12px;
+    min-height: 0;
   }
   .card.exit-left { transform: translateX(-120%) rotate(-15deg); opacity: 0; }
   .card.exit-right { transform: translateX(120%) rotate(15deg); opacity: 0; }
@@ -115,26 +121,29 @@
     flex: 1;
     object-fit: cover;
     min-height: 0;
+    display: block;
   }
   .card .card-title {
-    padding: 16px 20px;
-    font-size: 1.3rem;
+    padding: 14px 16px;
+    font-size: clamp(1.1rem, 4vw, 1.4rem);
     font-weight: 700;
     text-align: center;
     color: #333;
     background: white;
+    flex-shrink: 0;
   }
   .actions {
     display: flex;
     justify-content: space-around;
     gap: 20px;
+    flex-shrink: 0;
   }
   .btn-action {
-    width: 80px;
-    height: 80px;
+    width: clamp(60px, 18vw, 80px);
+    height: clamp(60px, 18vw, 80px);
     border-radius: 50%;
     border: none;
-    font-size: 2.2rem;
+    font-size: clamp(1.8rem, 6vw, 2.2rem);
     cursor: pointer;
     box-shadow: 0 6px 16px rgba(0,0,0,0.15);
     transition: transform 0.15s;
@@ -153,9 +162,10 @@
     align-items: center;
     text-align: center;
     overflow-y: auto;
+    padding: 20px;
   }
-  .result h1 { font-size: 1.8rem; margin-bottom: 8px; }
-  .result .subtitle { font-size: 1rem; opacity: 0.9; margin-bottom: 24px; }
+  .result h1 { font-size: clamp(1.5rem, 5vw, 2rem); margin-bottom: 8px; }
+  .result .subtitle { font-size: clamp(0.9rem, 3vw, 1.1rem); opacity: 0.9; margin-bottom: 24px; }
   .top-areas {
     width: 100%;
     background: rgba(255,255,255,0.15);
@@ -175,19 +185,14 @@
     gap: 12px;
     margin-bottom: 10px;
   }
-  .area-rank {
-    font-size: 1.8rem;
-  }
+  .area-rank { font-size: 1.8rem; }
   .area-name { 
     font-weight: 700; 
-    font-size: 1.1rem;
+    font-size: clamp(1rem, 3.5vw, 1.2rem);
     flex: 1;
     text-align: left;
   }
-  .area-stars {
-    font-size: 1.2rem;
-    letter-spacing: 2px;
-  }
+  .area-stars { font-size: 1.2rem; letter-spacing: 2px; }
   .area-bar {
     width: 100%;
     height: 8px;
@@ -201,26 +206,17 @@
     border-radius: 4px;
     transition: width 0.5s ease;
   }
-  .area-bar-fill.level-3 {
-    background: linear-gradient(90deg, #ff6b35, #ff8c42);
-    width: 100%;
-  }
-  .area-bar-fill.level-2 {
-    background: linear-gradient(90deg, #2ed573, #7bed9f);
-    width: 66%;
-  }
-  .area-bar-fill.level-1 {
-    background: rgba(255,255,255,0.4);
-    width: 33%;
-  }
+  .area-bar-fill.level-3 { background: linear-gradient(90deg, #ff6b35, #ff8c42); width: 100%; }
+  .area-bar-fill.level-2 { background: linear-gradient(90deg, #2ed573, #7bed9f); width: 66%; }
+  .area-bar-fill.level-1 { background: rgba(255,255,255,0.4); width: 33%; }
   .area-desc {
-    font-size: 0.85rem;
+    font-size: clamp(0.8rem, 2.8vw, 0.95rem);
     opacity: 0.9;
     text-align: left;
     line-height: 1.5;
   }
   .result-message {
-    font-size: 0.95rem;
+    font-size: clamp(0.85rem, 3vw, 1rem);
     line-height: 1.5;
     opacity: 0.95;
     margin-bottom: 20px;
@@ -231,16 +227,17 @@
     color: #764ba2;
     border: none;
     padding: 14px 36px;
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
     font-weight: 700;
     border-radius: 50px;
     cursor: pointer;
     margin-top: 8px;
   }
 
-  @media (max-height: 650px) {
-    .card .card-title { font-size: 1.1rem; padding: 12px 16px; }
-    .logo-doe { margin-top: 20px; }
+  @media (max-height: 600px) {
+    .card .card-title { padding: 10px 12px; }
+    .logo-doe { margin-top: 15px; }
+    .logo-img { max-height: 60px; }
   }
 </style>
 </head>
@@ -254,8 +251,8 @@
     <button class="btn-start" onclick="startGame()">Comenzar</button>
     
     <div class="logo-doe">
-  <img src="../logo-doe.png" alt="DOE - Departamento de Orientación Educacional - CEMS - UNS" class="logo-img">
-</div>
+      <img class="logo-img" src="data:image/png;base64,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......" alt="DOE - Departamento de Orientación Educacional - CEMS - UNS">
+    </div>
   </div>
 
   <div class="screen game hidden" id="screen-game">
@@ -337,53 +334,53 @@ const AREAS = {
 };
 
 const CARDS = [
-  // Economía y Administración
-  { area: "Economía y Administración", image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600", title: "Analizar números" },
-  { area: "Economía y Administración", image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600", title: "Liderar equipos" },
+  // Economía y Administración (2 tarjetas)
+  { area: "Economía y Administración", image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80", title: "Analizar números" },
+  { area: "Economía y Administración", image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&q=80", title: "Liderar equipos" },
 
-  // Ingeniería e Informática
-  { area: "Ingeniería e Informática", image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600", title: "Escribir código" },
-  { area: "Ingeniería e Informática", image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=600", title: "Diseñar máquinas" },
+  // Ingeniería e Informática (2 tarjetas)
+  { area: "Ingeniería e Informática", image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&q=80", title: "Escribir código" },
+  { area: "Ingeniería e Informática", image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=600&q=80", title: "Diseñar máquinas" },
 
-  // Arquitectura y Diseño
-  { area: "Arquitectura y Diseño", image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600", title: "Proyectar espacios" },
-  { area: "Arquitectura y Diseño", image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=600", title: "Crear piezas visuales" },
+  // Arquitectura y Diseño (2 tarjetas)
+  { area: "Arquitectura y Diseño", image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600&q=80", title: "Proyectar espacios" },
+  { area: "Arquitectura y Diseño", image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=600&q=80", title: "Crear piezas visuales" },
 
-  // Seguridad y Defensa
-  { area: "Seguridad y Defensa", image: "https://images.unsplash.com/photo-1580752300992-502f46b02c7f?w=600", title: "Servir y proteger" },
-  { area: "Seguridad y Defensa", image: "https://images.unsplash.com/photo-1582139329536-e7284fece509?w=600", title: "Actuar bajo presión" },
+  // Seguridad y Defensa (2 tarjetas)
+  { area: "Seguridad y Defensa", image: "https://images.unsplash.com/photo-1570612861542-284f4c12e75f?w=600&q=80", title: "Servir y proteger" },
+  { area: "Seguridad y Defensa", image: "https://images.unsplash.com/photo-1599169710989-3dce29a04344?w=600&q=80", title: "Actuar bajo presión" },
 
-  // Sociales
-  { area: "Sociales", image: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600", title: "Comunicar ideas" },
-  { area: "Sociales", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600", title: "Escuchar personas" },
+  // Sociales (2 tarjetas)
+  { area: "Sociales", image: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600&q=80", title: "Comunicar ideas" },
+  { area: "Sociales", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80", title: "Escuchar personas" },
 
-  // Exactas y Naturales
-  { area: "Exactas y Naturales", image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600", title: "Investigar el mundo" },
-  { area: "Exactas y Naturales", image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600", title: "Resolver problemas" },
+  // Exactas y Naturales (2 tarjetas)
+  { area: "Exactas y Naturales", image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&q=80", title: "Investigar el mundo" },
+  { area: "Exactas y Naturales", image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&q=80", title: "Resolver problemas" },
 
-  // Agropecuaria y Medio Ambiente
-  { area: "Agropecuaria y Medio Ambiente", image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600", title: "Trabajar al aire libre" },
-  { area: "Agropecuaria y Medio Ambiente", image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600", title: "Cuidar el planeta" },
+  // Agropecuaria y Medio Ambiente (2 tarjetas)
+  { area: "Agropecuaria y Medio Ambiente", image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&q=80", title: "Trabajar al aire libre" },
+  { area: "Agropecuaria y Medio Ambiente", image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80", title: "Cuidar el planeta" },
 
-  // Salud
-  { area: "Salud", image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600", title: "Diagnosticar y curar" },
-  { area: "Salud", image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600", title: "Entender la mente" },
+  // Salud (2 tarjetas)
+  { area: "Salud", image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80", title: "Diagnosticar y curar" },
+  { area: "Salud", image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&q=80", title: "Entender la mente" },
 
-  // Jurídica
-  { area: "Jurídica", image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600", title: "Defender derechos" },
-  { area: "Jurídica", image: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=600", title: "Resolver conflictos" },
+  // Jurídica (2 tarjetas)
+  { area: "Jurídica", image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80", title: "Defender derechos" },
+  { area: "Jurídica", image: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=600&q=80", title: "Resolver conflictos" },
 
-  // Arte
-  { area: "Arte", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600", title: "Expresarte en público" },
-  { area: "Arte", image: "https://images.unsplash.com/photo-1574717024453-354441e2fb77?w=600", title: "Contar historias" },
+  // Arte (2 tarjetas)
+  { area: "Arte", image: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=600&q=80", title: "Expresarte en público" },
+  { area: "Arte", image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&q=80", title: "Contar historias" },
 
-  // Deportes
-  { area: "Deportes", image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600", title: "Entrenar el cuerpo" },
-  { area: "Deportes", image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600", title: "Competir en equipo" },
+  // Deportes (2 tarjetas)
+  { area: "Deportes", image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80", title: "Entrenar el cuerpo" },
+  { area: "Deportes", image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600&q=80", title: "Competir en equipo" },
 
-  // Turismo y Gastronomía
-  { area: "Turismo y Gastronomía", image: "https://images.unsplash.com/photo-1556910103-1c02745aaab4?w=600", title: "Crear con sabores" },
-  { area: "Turismo y Gastronomía", image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600", title: "Mostrar el mundo" }
+  // Turismo y Gastronomía (2 tarjetas)
+  { area: "Turismo y Gastronomía", image: "https://images.unsplash.com/photo-1556910103-1c02745aaab4?w=600&q=80", title: "Crear con sabores" },
+  { area: "Turismo y Gastronomía", image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80", title: "Mostrar el mundo" }
 ];
 
 let deck = [];
@@ -474,7 +471,7 @@ function showResult() {
   const container = document.getElementById('top-areas');
   container.innerHTML = '';
   
-  const medals = ['🥇', '', '🥉'];
+  const medals = ['🥇', '🥈', '🥉'];
   top3.forEach((item, i) => {
     const [area, count] = item;
     const levelClass = count >= 2 ? 'level-3' : count === 1 ? 'level-2' : 'level-1';
