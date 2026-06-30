@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Match Vocacional</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    overflow: hidden;
+  }
+  .app {
+    width: 100%;
+    max-width: 420px;
+    height: 100vh;
+    max-height: 800px;
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .screen {
+    position: absolute;
+    inset: 0;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+  .screen.hidden { transform: translateX(100%); opacity: 0; pointer-events: none; }
+  .screen.left { transform: translateX(-100%); opacity: 0; pointer-events: none; }
+
+  .start {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+  .start h1 { font-size: 2.2rem; margin-bottom: 12px; font-weight: 800; }
+  .start p { font-size: 1rem; margin-bottom: 32px; opacity: 0.95; line-height: 1.5; padding: 0 12px; }
+  .start .emoji-big { font-size: 4rem; margin-bottom: 20px; }
+  .btn-start {
+    background: white;
+    color: #764ba2;
+    border: none;
+    padding: 16px 48px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+  }
+  .btn-start:active { transform: scale(0.95); }
+  
+  .logo-doe {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.logo-img {
+  max-width: 220px;
+  height: auto;
+  opacity: 0.95;
+}
+
+  .game { background: #f5f5f7; padding: 12px; }
+  .progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    margin: 0 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transition: width 0.3s ease;
+    border-radius: 3px;
+  }
+  .card {
+    flex: 1;
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    margin-bottom: 12px;
+  }
+  .card.exit-left { transform: translateX(-120%) rotate(-15deg); opacity: 0; }
+  .card.exit-right { transform: translateX(120%) rotate(15deg); opacity: 0; }
+  .card .card-image {
+    width: 100%;
+    flex: 1;
+    object-fit: cover;
+    min-height: 0;
+  }
+  .card .card-title {
+    padding: 16px 20px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: center;
+    color: #333;
+    background: white;
+  }
+  .actions {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+  }
+  .btn-action {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    font-size: 2.2rem;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    transition: transform 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-action:active { transform: scale(0.9); }
+  .btn-next { background: #fff; color: #ff4757; border: 3px solid #ff4757; }
+  .btn-match { background: #fff; color: #2ed573; border: 3px solid #2ed573; }
+
+  .result {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow-y: auto;
+  }
+  .result h1 { font-size: 1.8rem; margin-bottom: 8px; }
+  .result .subtitle { font-size: 1rem; opacity: 0.9; margin-bottom: 24px; }
+  .top-areas {
+    width: 100%;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .area-item {
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+  .area-item:last-child { border-bottom: none; }
+  .area-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .area-rank {
+    font-size: 1.8rem;
+  }
+  .area-name { 
+    font-weight: 700; 
+    font-size: 1.1rem;
+    flex: 1;
+    text-align: left;
+  }
+  .area-stars {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+  }
+  .area-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .area-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  .area-bar-fill.level-3 {
+    background: linear-gradient(90deg, #ff6b35, #ff8c42);
+    width: 100%;
+  }
+  .area-bar-fill.level-2 {
+    background: linear-gradient(90deg, #2ed573, #7bed9f);
+    width: 66%;
+  }
+  .area-bar-fill.level-1 {
+    background: rgba(255,255,255,0.4);
+    width: 33%;
+  }
+  .area-desc {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    text-align: left;
+    line-height: 1.5;
+  }
+  .result-message {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    opacity: 0.95;
+    margin-bottom: 20px;
+    padding: 0 12px;
+  }
+  .btn-restart {
+    background: white;
+    color: #764ba2;
+    border: none;
+    padding: 14px 36px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  @media (max-height: 650px) {
+    .card .card-title { font-size: 1.1rem; padding: 12px 16px; }
+    .logo-doe { margin-top: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="screen start" id="screen-start">
+    <div class="emoji-big">💘</div>
+    <h1>Match Vocacional</h1>
+    <p>Deslizá para descubrir qué áreas te atraen. No hay respuestas correctas, solo tus preferencias.</p>
+    <button class="btn-start" onclick="startGame()">Comenzar</button>
+    
+    <div class="logo-doe">
+  <img src="../logo-doe.png" alt="DOE - Departamento de Orientación Educacional - CEMS - UNS" class="logo-img">
+</div>
+  </div>
+
+  <div class="screen game hidden" id="screen-game">
+    <div class="progress">
+      <span id="counter">1/20</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <span id="matches-count">💚 0</span>
+    </div>
+    <div class="card" id="card">
+      <img class="card-image" id="card-image" src="" alt="">
+      <div class="card-title" id="card-title">Título</div>
+    </div>
+    <div class="actions">
+      <button class="btn-action btn-next" onclick="choose('next')">✕</button>
+      <button class="btn-action btn-match" onclick="choose('match')">💚</button>
+    </div>
+  </div>
+
+  <div class="screen result hidden" id="screen-result">
+    <h1>¡Tus áreas top!</h1>
+    <p class="subtitle">Esto es lo que más te resonó</p>
+    <div class="top-areas" id="top-areas"></div>
+    <p class="result-message">Acercate al stand y contale a las orientadoras qué áreas te atraparon. Tenemos recursos para que sigas explorando.</p>
+    <button class="btn-restart" onclick="restart()">Jugar de nuevo</button>
+  </div>
+
+</div>
+
+<script>
+const AREAS = {
+  "Economía y Administración": { 
+    emoji: "💼", 
+    desc: "Gestión de organizaciones, análisis financiero, estrategias de mercado y administración de recursos humanos y materiales."
+  },
+  "Ingeniería e Informática": { 
+    emoji: "💻", 
+    desc: "Desarrollo tecnológico, diseño de sistemas, programación, automatización de procesos y resolución de problemas técnicos."
+  },
+  "Arquitectura y Diseño": { 
+    emoji: "📐", 
+    desc: "Proyección de espacios, diseño urbano, creación visual, desarrollo de productos y planificación del hábitat."
+  },
+  "Seguridad y Defensa": { 
+    emoji: "🛡️", 
+    desc: "Protección ciudadana, defensa nacional, gestión de emergencias, prevención de riesgos y mantenimiento del orden público."
+  },
+  "Sociales": { 
+    emoji: "🌍", 
+    desc: "Comunicación, educación, investigación social, análisis político y comprensión de las dinámicas comunitarias."
+  },
+  "Exactas y Naturales": { 
+    emoji: "🔬", 
+    desc: "Investigación científica, análisis matemático, estudio de fenómenos naturales y desarrollo de conocimiento teórico."
+  },
+  "Agropecuaria y Medio Ambiente": { 
+    emoji: "🌱", 
+    desc: "Producción sustentable, gestión ambiental, cuidado de ecosistemas, desarrollo rural y conservación de recursos naturales."
+  },
+  "Salud": { 
+    emoji: "⚕️", 
+    desc: "Atención médica, prevención de enfermedades, cuidado del bienestar físico y mental, y promoción de la salud comunitaria."
+  },
+  "Jurídica": { 
+    emoji: "⚖️", 
+    desc: "Asesoramiento legal, defensa de derechos, resolución de conflictos, redacción de documentos jurídicos y aplicación de normas."
+  },
+  "Arte": { 
+    emoji: "🎨", 
+    desc: "Expresión creativa, producción artística, comunicación estética, desarrollo cultural y creación de contenidos audiovisuales."
+  },
+  "Deportes": { 
+    emoji: "⚽", 
+    desc: "Entrenamiento físico, rendimiento deportivo, educación motriz, gestión de actividades recreativas y promoción de vida saludable."
+  },
+  "Turismo y Gastronomía": { 
+    emoji: "✈️", 
+    desc: "Atención turística, gestión hotelera, producción gastronómica, organización de eventos y promoción de destinos."
+  }
+};
+
+const CARDS = [
+  // Economía y Administración
+  { area: "Economía y Administración", image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600", title: "Analizar números" },
+  { area: "Economía y Administración", image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600", title: "Liderar equipos" },
+
+  // Ingeniería e Informática
+  { area: "Ingeniería e Informática", image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600", title: "Escribir código" },
+  { area: "Ingeniería e Informática", image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=600", title: "Diseñar máquinas" },
+
+  // Arquitectura y Diseño
+  { area: "Arquitectura y Diseño", image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600", title: "Proyectar espacios" },
+  { area: "Arquitectura y Diseño", image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=600", title: "Crear piezas visuales" },
+
+  // Seguridad y Defensa
+  { area: "Seguridad y Defensa", image: "https://images.unsplash.com/photo-1580752300992-502f46b02c7f?w=600", title: "Servir y proteger" },
+  { area: "Seguridad y Defensa", image: "https://images.unsplash.com/photo-1582139329536-e7284fece509?w=600", title: "Actuar bajo presión" },
+
+  // Sociales
+  { area: "Sociales", image: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600", title: "Comunicar ideas" },
+  { area: "Sociales", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600", title: "Escuchar personas" },
+
+  // Exactas y Naturales
+  { area: "Exactas y Naturales", image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600", title: "Investigar el mundo" },
+  { area: "Exactas y Naturales", image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600", title: "Resolver problemas" },
+
+  // Agropecuaria y Medio Ambiente
+  { area: "Agropecuaria y Medio Ambiente", image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600", title: "Trabajar al aire libre" },
+  { area: "Agropecuaria y Medio Ambiente", image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600", title: "Cuidar el planeta" },
+
+  // Salud
+  { area: "Salud", image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600", title: "Diagnosticar y curar" },
+  { area: "Salud", image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600", title: "Entender la mente" },
+
+  // Jurídica
+  { area: "Jurídica", image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600", title: "Defender derechos" },
+  { area: "Jurídica", image: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=600", title: "Resolver conflictos" },
+
+  // Arte
+  { area: "Arte", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600", title: "Expresarte en público" },
+  { area: "Arte", image: "https://images.unsplash.com/photo-1574717024453-354441e2fb77?w=600", title: "Contar historias" },
+
+  // Deportes
+  { area: "Deportes", image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600", title: "Entrenar el cuerpo" },
+  { area: "Deportes", image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600", title: "Competir en equipo" },
+
+  // Turismo y Gastronomía
+  { area: "Turismo y Gastronomía", image: "https://images.unsplash.com/photo-1556910103-1c02745aaab4?w=600", title: "Crear con sabores" },
+  { area: "Turismo y Gastronomía", image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600", title: "Mostrar el mundo" }
+];
+
+let deck = [];
+let currentIndex = 0;
+let matches = {};
+let totalCards = 20;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startGame() {
+  const byArea = {};
+  CARDS.forEach(c => {
+    if (!byArea[c.area]) byArea[c.area] = [];
+    byArea[c.area].push(c);
+  });
+  
+  deck = [];
+  const areas = Object.keys(byArea);
+  
+  // Primera ronda: una de cada área (12 tarjetas)
+  const firstRound = shuffle(areas).map(a => byArea[a][0]);
+  deck.push(...firstRound);
+  
+  // Segunda ronda: la segunda de cada área (8 más para completar 20)
+  const secondRound = shuffle(areas).map(a => byArea[a][1]);
+  const needed = totalCards - deck.length;
+  deck.push(...secondRound.slice(0, needed));
+  
+  deck = shuffle(deck);
+  
+  currentIndex = 0;
+  matches = {};
+  Object.keys(AREAS).forEach(a => matches[a] = 0);
+  
+  document.getElementById('screen-start').classList.add('left');
+  document.getElementById('screen-game').classList.remove('hidden');
+  showCard();
+}
+
+function showCard() {
+  const card = deck[currentIndex];
+  const cardEl = document.getElementById('card');
+  cardEl.classList.remove('exit-left', 'exit-right');
+  document.getElementById('card-image').src = card.image;
+  document.getElementById('card-title').textContent = card.title;
+  document.getElementById('counter').textContent = `${currentIndex + 1}/${totalCards}`;
+  document.getElementById('progress-fill').style.width = `${((currentIndex) / totalCards) * 100}%`;
+  
+  const totalMatches = Object.values(matches).reduce((a,b) => a+b, 0);
+  document.getElementById('matches-count').textContent = `💚 ${totalMatches}`;
+}
+
+function choose(type) {
+  const card = deck[currentIndex];
+  const cardEl = document.getElementById('card');
+  
+  if (type === 'match') {
+    matches[card.area]++;
+    cardEl.classList.add('exit-right');
+  } else {
+    cardEl.classList.add('exit-left');
+  }
+  
+  setTimeout(() => {
+    currentIndex++;
+    if (currentIndex >= totalCards) {
+      showResult();
+    } else {
+      showCard();
+    }
+  }, 300);
+}
+
+function showResult() {
+  document.getElementById('screen-game').classList.add('left');
+  document.getElementById('screen-result').classList.remove('hidden');
+  
+  const sorted = Object.entries(matches).sort((a,b) => b[1] - a[1]);
+  const top3 = sorted.slice(0, 3);
+  
+  const container = document.getElementById('top-areas');
+  container.innerHTML = '';
+  
+  const medals = ['🥇', '', '🥉'];
+  top3.forEach((item, i) => {
+    const [area, count] = item;
+    const levelClass = count >= 2 ? 'level-3' : count === 1 ? 'level-2' : 'level-1';
+    const stars = '⭐'.repeat(count);
+    
+    const div = document.createElement('div');
+    div.className = 'area-item';
+    div.innerHTML = `
+      <div class="area-header">
+        <div class="area-rank">${medals[i]}</div>
+        <div class="area-name">${AREAS[area].emoji} ${area}</div>
+        <div class="area-stars">${stars}</div>
+      </div>
+      <div class="area-bar">
+        <div class="area-bar-fill ${levelClass}"></div>
+      </div>
+      <div class="area-desc">${AREAS[area].desc}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function restart() {
+  document.getElementById('screen-result').classList.add('hidden');
+  document.getElementById('screen-result').classList.remove('left');
+  document.getElementById('screen-start').classList.remove('left');
+}
+</script>
+</body>
+</html>
